@@ -6,8 +6,9 @@ A simple bin to create a tmux session
 
 ```bash
 cd ~/.programs # or anywhere else you want
-git clone https://github.com/alexng353/sm.git 
-chmod +x sm/sm.ts
+git clone https://github.com/alexng353/sm.git && cd sm
+bun install # requires zod and bun
+chmod +x sm.sh
 
 cd "place in your path"
 ln -s ~/.programs/sm/sm.sh sm # note: you can call it whatever you want

@@ -12,7 +12,7 @@ const config = hasFlag(flags, "-c", "--config");
 
 const pwd = (await $`pwd`.text()).replaceAll("\n", "");
 
-let configFile = pwd + "/tmux.json";
+let configFile = pwd + "/.sm.json";
 if (config) {
   const idx = flags.indexOf("-c");
   const file = flags[idx + 1];

@@ -10,7 +10,7 @@ git clone https://github.com/alexng353/sm.git
 chmod +x sm/sm.ts
 
 cd "place in your path"
-ln -s ~/.programs/sm/sm.ts sm # note: you can call it whatever you want
+ln -s ~/.programs/sm/sm.sh sm # note: you can call it whatever you want
 
 # restart your terminal
 exec $SHELL

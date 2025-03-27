@@ -1,5 +1,3 @@
-#!/home/alex/.bun/bin/bun run
-
 import { $ } from "bun";
 import fs from "fs/promises";
 import z from "zod";

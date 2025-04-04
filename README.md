@@ -19,23 +19,35 @@ exec $SHELL
 
 ## Configuration
 
-sm relies on a config file located at `YOUR_PROJECT/.sm.json`. Here's my config:
+sm relies on a config file located at `YOUR_PROJECT/.sm.json`. Here's an example:
 
 ```jsonc
 {
-  "sessionName": "my-session",
-  "sessions": [
-    {
-      "name": "api server",
-      "path": "~/code/project-name/api", // must be a full path or ~/path. If relative, things don't work.
-      "commands": [
-        "bun db:start",
-        "bun db:m",
-        "bun watch"
-      ]
-    },
-    // ...
-  ]
+    "sessionName": "my-session",
+    "sessions": [
+        {
+            "name": "api server",
+            // Path can be an absolute or relative path. 
+            // Supports ~, ~/, ./, ../ etc.
+            "path": "~/code/project-name/api", 
+            "commands": [
+                "bun db:start",
+                "bun db:m",
+                "bun watch"
+            ]
+        },
+        // ...
+    ], 
+    "repos": [
+        {
+            "path": "api",
+            "repo": "project-name/api"
+        },
+        {
+            "path": "web",
+            "repo": "project-name/web"
+        }
+    ]
 }
 ```
 

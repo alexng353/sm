@@ -1,44 +1,43 @@
 import { $ } from "bun";
-import fs from "fs/promises";
-import z from "zod";
+import commands from "./commands";
+import { hasFlag } from "./utils";
+import { getConfigFile } from "./config";
 
 const args = process.argv.slice(2);
 const flags = args.filter((arg) => arg.startsWith("-"));
+
+const isHelp = hasFlag(flags, "-h", "--help");
+
+const command = args[0];
+if (command) {
+  const commandObj = commands.find((c) => c.command === command);
+  if (!commandObj) {
+    console.error(`Command ${command} not found`);
+    process.exit(1);
+  }
+  if (isHelp) {
+    console.log(commandObj.description);
+    process.exit(0);
+  }
+  await commandObj.handler(process.argv.slice(3));
+  process.exit(0);
+}
+
+if (isHelp) {
+  console.log("Usage: sm [command] [options]");
+  console.log("Commands:");
+  for (const command of commands) {
+    console.log(`  ${command.command} - ${command.description}`);
+  }
+  process.exit(0);
+}
+
 const background = hasFlag(flags, "-b", "--background");
 const kill = hasFlag(flags, "-d", "--down") || hasFlag(flags, "-k", "--kill");
-const config = hasFlag(flags, "-c", "--config");
 
-const pwd = (await $`pwd`.text()).replaceAll("\n", "");
+const config = await getConfigFile();
 
-let configFile = pwd + "/.sm.json";
-if (config) {
-  const idx = flags.indexOf("-c");
-  const file = flags[idx + 1];
-  if (file.startsWith("/")) {
-    configFile = file;
-  } else if (file.startsWith(".")) {
-    configFile = pwd + "/" + file;
-  } 
-}
-if (!await fs.exists(configFile)) {
-  console.error(`Config file ${configFile} does not exist`);
-  process.exit(1);
-}
-
-const schema = z.object({
-  sessionName: z.string(),
-  sessions: z.array(
-    z.object({
-      name: z.string(),
-      path: z.string(),
-      commands: z.array(z.string()),
-    })
-  ),
-});
-
-const data = schema.parse(JSON.parse(await fs.readFile(configFile, "utf8")));
-
-const sessionName = data.sessionName;
+const sessionName = config.sessionName;
 
 if (kill) {
   await $`tmux kill-session -t ${sessionName}`;
@@ -54,7 +53,7 @@ if (out.exitCode !== 0) {
   throw out;
 }
 
-for (const [index, session] of data.sessions.entries()) {
+for (const [index, session] of config.sessions.entries()) {
   if (index === 0) {
     await $`tmux rename-window -t ${sessionName}:${index} ${session.name}`;
     await $`tmux send-keys -t ${sessionName} "cd ${session.path}" C-m`;
@@ -70,9 +69,3 @@ if (!background) {
   await $`tmux attach -t ${sessionName}`;
 }
 
-function hasFlag(args: string[], flag: string, flag2?: string): boolean {
-  if (flag2) {
-    return args.includes(flag) || args.includes(flag2);
-  }
-  return args.includes(flag);
-}

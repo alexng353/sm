@@ -25,7 +25,7 @@ const configSchema = z.object({
        * with only URL-safe characters. Ends with ".git".
        */
       repo: z.string().regex(
-        /^[a-zA-Z0-9-_]+\/[a-zA-Z0-9-_]+$/,
+        /^[\w.-]+\/[\w.-]+$/,
         'github_repo must be in the form "username/repository" with only URL-safe characters'
       ).transform(str => str.endsWith(".git") ? str : str + ".git")
     })

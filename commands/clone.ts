@@ -1,6 +1,6 @@
 import { $ } from "bun";
 import { getConfigFile } from "../config";
-import {  hasFlag, pwd } from "../utils";
+import { hasFlag, pwd } from "../utils";
 
 export default {
   command: "clone",
@@ -8,13 +8,12 @@ export default {
 Usage: sm clone [options]
 Options:
   --ssh     use ssh (default)
-  --https   use https
-  `,
+  --https   use https`,
   handler: async (args: string[]) => {
     const config = await getConfigFile()
     const repos = config.repos;
     const useSSH = !hasFlag(args, "--https")
-    
+
     if (repos.length === 0) {
       console.error("No repos to clone");
       process.exit(1);

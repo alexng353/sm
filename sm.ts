@@ -9,7 +9,7 @@ const flags = args.filter((arg) => arg.startsWith("-"));
 const isHelp = hasFlag(flags, "-h", "--help");
 
 const command = args[0];
-if (command) {
+if (command && !command.startsWith("-")) {
   const commandObj = commands.find((c) => c.command === command);
   if (!commandObj) {
     console.error(`Command ${command} not found`);
@@ -24,10 +24,28 @@ if (command) {
 }
 
 if (isHelp) {
-  console.log("Usage: sm [command] [options]");
-  console.log("Commands:");
-  for (const command of commands) {
-    console.log(`  ${command.command} - ${command.description}`);
+  console.log(`
+sm - Simple tmux Manager
+
+Usage: sm [command] [options]
+
+Options:
+  -h, --help           Show this help
+  -b, --background     Run in background
+  -d, --down
+  -k, --kill           Kill the session
+`.trim());
+
+  console.log("\nCommands:");
+  for (const [idx, command] of commands.entries()) {
+    const descriptionLines = command.description.split("\n");
+    const formattedDescription = descriptionLines
+      .map((line, idx) => (idx === 0 ? line : "    " + line))
+      .join("\n");
+    console.log(`  ${command.command} - ${formattedDescription}`);
+    if (idx !== commands.length - 1) {
+      console.log();
+    }
   }
   process.exit(0);
 }

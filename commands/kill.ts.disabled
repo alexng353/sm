@@ -1,0 +1,13 @@
+import { $ } from "bun";
+import { getConfigFile } from "../config";
+import { hasFlag, pwd } from "../utils";
+
+export default {
+  command: "kill",
+  description: `Kill the current session.
+Usage: sm kill [options]`,
+  handler: async (args: string[]) => {
+    const config = await getConfigFile()
+    await $`tmux kill-session -t ${config.sessionName}`;
+  }
+}
